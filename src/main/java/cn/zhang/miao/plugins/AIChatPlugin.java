@@ -1,32 +1,64 @@
 package cn.zhang.miao.plugins;
 
 import cn.zhang.miao.packages.ChatGPT;
+import com.mikuac.shiro.annotation.GroupMessageHandler;
+import com.mikuac.shiro.annotation.MessageHandlerFilter;
+import com.mikuac.shiro.annotation.PrivateMessageHandler;
+import com.mikuac.shiro.annotation.common.Shiro;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
-import com.mikuac.shiro.core.BotPlugin;
+import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent;
+import com.mikuac.shiro.enums.AtEnum;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@Shiro
 @Component
-public class AIChatPlugin extends BotPlugin {
-    /**
-     * 当接收到私聊消息时，会调用此方法进行处理。
-     *
-     * @param bot   Bot对象，表示机器人实例
-     * @param event PrivateMessageEvent对象，表示私聊消息事件
-     * @return int类型的返回值，表示消息处理结果，MESSAGE_BLOCK表示已处理消息并阻止其继续传递
-     */
-    @Override
-    public int onPrivateMessage(Bot bot, PrivateMessageEvent event) {
+public class AIChatPlugin {
+    private static final String CLEAR_COMMAND = "清除对话";
+    private static final String CLEAR_SUCCESS_MESSAGE = "清除成功了喵~";
+    private static final String MESSAGE_REGEX = "\\[[^\\]]+\\]\\s*(.+)";
+
+    @GroupMessageHandler
+    @MessageHandlerFilter(at = AtEnum.NEED)
+    public void aiGroupChat(Bot bot, GroupMessageEvent event, Matcher matcher) {
+        String message = extractMessage(event.getMessage());
         String sendMsg;
-        if ("清除对话".equals(event.getMessage())) {
+        if (CLEAR_COMMAND.equals(message)) {
             ChatGPT.clear(String.valueOf(event.getUserId()));
-            sendMsg = MsgUtils.builder().text("清除成功了喵~").build();
-            bot.sendPrivateMsg(event.getUserId(), sendMsg, false);
-            return MESSAGE_BLOCK;
+            sendMsg = buildMessage(event.getUserId(), CLEAR_SUCCESS_MESSAGE);
+        } else {
+            sendMsg = buildMessage(event.getUserId(), ChatGPT.chat(String.valueOf(event.getUserId()), message));
         }
-        sendMsg = MsgUtils.builder().text(ChatGPT.chat(String.valueOf(event.getUserId()), event.getMessage())).build();
+        bot.sendGroupMsg(event.getGroupId(), sendMsg, false);
+    }
+
+    @PrivateMessageHandler
+    public void aiPrivateChat(Bot bot, PrivateMessageEvent event) {
+        String message = event.getMessage();
+        String sendMsg;
+        if (CLEAR_COMMAND.equals(message)) {
+            ChatGPT.clear(String.valueOf(event.getUserId()));
+            sendMsg = buildMessage(event.getUserId(), CLEAR_SUCCESS_MESSAGE);
+        } else {
+            sendMsg = MsgUtils.builder().text(ChatGPT.chat(String.valueOf(event.getUserId()), message)).build();
+        }
         bot.sendPrivateMsg(event.getUserId(), sendMsg, false);
-        return MESSAGE_BLOCK;
+    }
+
+    private String extractMessage(String message) {
+        Pattern pattern = Pattern.compile(MESSAGE_REGEX);
+        Matcher msgMatcher = pattern.matcher(message);
+        if (msgMatcher.find()) {
+            return msgMatcher.group(1);
+        }
+        return message;
+    }
+
+    private String buildMessage(long userId, String text) {
+        return MsgUtils.builder().at(userId).text(text).build();
     }
 }

@@ -5,6 +5,3 @@ shiro:
     server:
       enable: true
       url: "/ws/shiro"
-  plugin-list:
-    - cn.zhang.miao.plugins.RenPinPlugin
-    - cn.zhang.miao.plugins.AIChatPlugin
