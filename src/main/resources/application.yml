@@ -1,13 +1,23 @@
+# Spring Boot 应用程序的配置
 spring:
   application:
     name: miao
+
+# 服务器配置
 server:
   port: 5555
+
+# Shiro 配置
 shiro:
   ws:
     server:
       enable: true
       url: "/ws/shiro"
   plugin-list:
-    - cn.zhang.miao.plugins.RenPinPlugin
+    - cn.zhang.miao.plugins.HelpPlugin
     - cn.zhang.miao.plugins.AIChatPlugin
+    - cn.zhang.miao.plugins.TodayInHistoryPlugin
+    - cn.zhang.miao.plugins.RenPinPlugin
+    - cn.zhang.miao.plugins.IPInfoPlugin
+    - cn.zhang.miao.plugins.PingPlugin
+    - cn.zhang.miao.plugins.CallPolicePlugin
