@@ -17,22 +17,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class AIChatPlugin extends BotPlugin {
     private static final String CLEAR_COMMAND = "清除对话";
     private static final String CLEAR_SUCCESS_MESSAGE = "清除成功了喵~";
-    private static final Pattern MESSAGE_PATTERN = Pattern.compile("\\[[^\\]]+\\]\\s*(.+)");
     private static final String CHAT_ENDPOINT = "https://free.gpt.ge/v1/chat/completions";
     private static final String API_KEY = "Bearer sk-6QWhi99KUkfyYnwD8cF49aC2F9B04745841fBeB611355dDc";
-    private static final String PROMPT = "现在你将模仿一只可爱的猫娘";
+    private static final String PROMPT = "现在请你模仿一只可爱的猫娘";
     private static final String MODEL = "gpt-3.5-turbo";
     private static final String SYSTEM_ROLE = "system";
     private static final String USER_ROLE = "user";
     private static final String ASSISTANT_ROLE = "assistant";
-    private static final String ERROR_MESSAGE = "出现了异常";
+    private static final String ERROR_MESSAGE = "出错了喵~";
     private final Map<String, List<Map<String, String>>> userContextMessages = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -41,14 +38,14 @@ public class AIChatPlugin extends BotPlugin {
      *
      * @param bot   Bot实例
      * @param event 群组消息事件
-     * @return 消息处理状态，MESSAGE_BLOCK表示消息已处理，MESSAGE_IGNORE表示消息忽略
+     * @return 消息处理状态
      */
     @Override
     public int onGroupMessage(Bot bot, GroupMessageEvent event) {
-        String message = extractMessage(event.getMessage());
         String atMessage = "[CQ:at,qq=" + bot.getSelfId() + "]";
         if (event.getMessage().contains(atMessage)) {
             executorService.submit(() -> {
+                String message = event.getMessage().substring(atMessage.length() + 1);
                 String sendMsg;
                 if (CLEAR_COMMAND.equals(message)) {
                     clearUserContext(String.valueOf(event.getUserId()));
@@ -68,7 +65,7 @@ public class AIChatPlugin extends BotPlugin {
      *
      * @param bot   Bot实例
      * @param event 私聊消息事件
-     * @return 消息处理状态，MESSAGE_BLOCK表示消息已处理，MESSAGE_IGNORE表示消息忽略
+     * @return 消息处理状态
      */
     @Override
     public int onPrivateMessage(Bot bot, PrivateMessageEvent event) {
@@ -84,17 +81,6 @@ public class AIChatPlugin extends BotPlugin {
             bot.sendPrivateMsg(event.getUserId(), sendMsg, false);
         });
         return MESSAGE_BLOCK;
-    }
-
-    /**
-     * 提取消息内容
-     *
-     * @param message 原始消息
-     * @return 提取后的消息内容
-     */
-    private String extractMessage(String message) {
-        Matcher msgMatcher = MESSAGE_PATTERN.matcher(message);
-        return msgMatcher.find() ? msgMatcher.group(1) : message;
     }
 
     /**

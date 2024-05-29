@@ -14,10 +14,13 @@ shiro:
       enable: true
       url: "/ws/shiro"
   plugin-list:
-    - cn.zhang.miao.plugins.HelpPlugin
-    - cn.zhang.miao.plugins.AIChatPlugin
-    - cn.zhang.miao.plugins.TodayInHistoryPlugin
-    - cn.zhang.miao.plugins.RenPinPlugin
-    - cn.zhang.miao.plugins.IPInfoPlugin
+    - cn.zhang.miao.plugins.FuckQQBotPlugin
     - cn.zhang.miao.plugins.PingPlugin
     - cn.zhang.miao.plugins.CallPolicePlugin
+    - cn.zhang.miao.plugins.CallEmojiPlugin
+    - cn.zhang.miao.plugins.IPInfoPlugin
+    - cn.zhang.miao.plugins.TodayInHistoryPlugin
+    - cn.zhang.miao.plugins.EmotionAnalysisPlugin
+    - cn.zhang.miao.plugins.RenPinPlugin
+    - cn.zhang.miao.plugins.HelpPlugin
+    - cn.zhang.miao.plugins.AIChatPlugin
