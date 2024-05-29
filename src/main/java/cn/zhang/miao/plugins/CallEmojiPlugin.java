@@ -42,7 +42,7 @@ public class CallEmojiPlugin extends BotPlugin {
      * @return 随机生成的警察表情符号字符串
      */
     private String generateRandomEmojis() {
-        int count = 15 + RANDOM.nextInt(11);
+        int count = 10 + RANDOM.nextInt(11);
         StringBuilder emojiBuilder = new StringBuilder();
         for (int i = 0; i < count; i++) {
             emojiBuilder.append(EMOJIS[RANDOM.nextInt(EMOJIS.length)]);

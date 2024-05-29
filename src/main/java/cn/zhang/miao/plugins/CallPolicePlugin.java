@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 @Component
 public class CallPolicePlugin extends BotPlugin {
     private static final String COMMAND = "call police";
-    private static final String[] EMOJIS = {"👮", "👮🏻", "🚔", "🚨", "🚓"};
+    private static final String[] EMOJIS = {"\uD83D\uDC6E", "\uD83D\uDC6E\uD83C\uDFFB", "\uD83D\uDE94", "\uD83D\uDEA8", "\uD83D\uDE93"};
     private static final Random RANDOM = new Random();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
